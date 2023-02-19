@@ -137,9 +137,11 @@ RegisterNetEvent('lockpicks:UseLockpick', function(isAdvanced)
                 if usingAdvanced then
                     lockpick(true)
                     currentRegister = k
+                    
                     if not IsWearingHandshoes() then
                         TriggerServerEvent("evidence:server:CreateFingerDrop", pos)
                     end
+                    
                     if not copsCalled then
                         local s1, s2 = GetStreetNameAtCoord(pos.x, pos.y, pos.z)
                         local street1 = GetStreetNameFromHashKey(s1)
@@ -148,6 +150,7 @@ RegisterNetEvent('lockpicks:UseLockpick', function(isAdvanced)
                         if street2 ~= nil then
                             streetLabel = streetLabel .. " " .. street2
                         end
+                        
                         TriggerServerEvent("qb-storerobbery:server:callCops", "cashier", currentRegister, streetLabel, pos)
                         copsCalled = true
                     end
@@ -435,7 +438,7 @@ RegisterNetEvent('qb-storerobbery:client:setSafeStatus', function(safe, bool)
 end)
 
 RegisterNetEvent('qb-storerobbery:client:robberyCall', function(_, _, _, coords)
-    if PlayerJob.name == "police" and onDuty then
+    if (PlayerJob.name == "police" or PlayerJob.type == "leo") and onDuty then
         PlaySound(-1, "Lose_1st", "GTAO_FM_Events_Soundset", 0, 0, 1)
         TriggerServerEvent('police:server:policeAlert', Lang:t("email.storerobbery_progress"))
 
