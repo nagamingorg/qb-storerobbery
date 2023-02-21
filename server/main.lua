@@ -44,9 +44,14 @@ RegisterNetEvent('qb-storerobbery:server:takeMoney', function(register, isDone)
         local info = {
             worth = math.random(cashA, cashB)
         }
-        Player.Functions.AddItem('markedbills', bags, false, info)
-        TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items['markedbills'], "add")
-        if math.random(1, 100) <= 10 then
+        payment = math.random(3) * (math.random(cashA, cashB))
+
+        Player.Functions.AddMoney('bank', payment)
+        TriggerClientEvent('QBCore:Notify', Player.PlayerData.source, Lang:t('text.stolen_amount', {value = payment}))
+        --Player.Functions.AddItem('markedbills', bags, false, info)
+        --TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items['markedbills'], "add")
+        
+        --if math.random(1, 100) <= 10 then
           if Config.Registers[register].safeKey ~= nil then
             local code = SafeCodes[Config.Registers[register].safeKey]
             if Config.Safes[Config.Registers[register].safeKey].type == "keypad" then
@@ -61,7 +66,7 @@ RegisterNetEvent('qb-storerobbery:server:takeMoney', function(register, isDone)
             Player.Functions.AddItem("stickynote", 1, false, info)
             TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items["stickynote"], "add")
           end
-        end
+        --end
     end
 end)
 
@@ -92,12 +97,12 @@ RegisterNetEvent('qb-storerobbery:server:SafeReward', function(safe)
         return DropPlayer(src, "Attempted exploit abuse")
     end
 
-	local bags = math.random(1,3)
-	local info = {
-		worth = math.random(cashA, cashB)
-	}
-	Player.Functions.AddItem('markedbills', bags, false, info)
-	TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items['markedbills'], "add")
+	payment = math.random(3) * (math.random(cashA, cashB))
+
+  Player.Functions.AddMoney('bank', payment)
+  TriggerClientEvent('QBCore:Notify', Player.PlayerData.source, Lang:t('text.stolen_amount', {value = payment}))
+	--Player.Functions.AddItem('markedbills', bags, false, info)
+	--TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items['markedbills'], "add")
 
     local luck = math.random(1, 100)
     local odd = math.random(1, 100)

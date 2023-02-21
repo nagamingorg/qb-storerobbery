@@ -62,7 +62,11 @@ Config.Registers = {
   [51] = {vector3(-330.29, 6085.55, 31.57), robbed = false, time = 0, safekey = nil},
   [52] = {vector3(2571.15, 296.96, 108.85), robbed = false, time = 0, safekey = nil},
   [53] = {vector3(2566.59, 293.13, 108.85), robbed = false, time = 0, safekey = nil},
-  [54] = {vector3(1165.9, 2710.81, 38.15), robbed = false, time = 0, safeKey = 15}
+  [54] = {vector3(1165.9, 2710.81, 38.15), robbed = false, time = 0, safeKey = 15},
+  [55] = {vector3(4.81, 6511.24, 31.94), robbed = false, time = 0, safekey = nil},
+  [56] = {vector3(-1101.41, 2711.75, 19.7), robbed = false, time = 0, safekey = nil},
+  [57]= {vector3(1197.49, 2711.09, 38.29), robbed = false, time = 0, safekey = nil},
+  [58]= {vector3(1694.87, 4822.11, 42.13), robbed = false, time = 0, safekey = nil},
 }
 
 Config.Safes = {

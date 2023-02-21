@@ -11,11 +11,12 @@ local Translations = {
         try_combination = "~g~E~w~ - Try Combination",
         safe_opened = "Safe Opened",
         emptying_the_register= "Emptying The Register..",
+        stolen_amount = "You took $%{value} from the register!",
         safe_code = "Safe Code: "
     },
     email = {
         shop_robbery = "10-31 | Shop Robbery",
-        someone_is_trying_to_rob_a_store = "Someone Is Trying To Rob A Store At %{street} (CAMERA ID: %{cameraId1})",
+        someone_is_trying_to_rob_a_store = "Someone Is Trying To Rob A Store At %{street}",
         storerobbery_progress = "Storerobbery in progress"
     },
 }
