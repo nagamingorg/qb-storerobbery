@@ -1,17 +1,24 @@
+-- Variables
 local QBCore = exports['qb-core']:GetCoreObject()
+local PlayerData = {}
+
 local currentRegister = 0
 local currentSafe = 0
 local copsCalled = false
-local CurrentCops = 0
+local currentCops = 0
 local PlayerJob = {}
-local onDuty = false
 local usingAdvanced = false
 
-CreateThread(function()
-    Wait(1000)
-    if QBCore.Functions.GetPlayerData().job ~= nil and next(QBCore.Functions.GetPlayerData().job) then
-        PlayerJob = QBCore.Functions.GetPlayerData().job
-    end
+RegisterNetEvent('QBCore:Client:OnPlayerLoaded', function()
+  PlayerData = QBCore.Functions.GetPlayerData()
+end)
+
+RegisterNetEvent('QBCore:Client:OnPlayerUnload', function()
+  PlayerData = nil
+end)
+
+RegisterNetEvent('QBCore:Player:SetPlayerData', function(val)
+  PlayerData = val
 end)
 
 CreateThread(function()
@@ -59,7 +66,11 @@ CreateThread(function()
                         if not Config.Safes[safe].robbed then
                             DrawText3Ds(Config.Safes[safe][1].xyz, Lang:t("text.try_combination"))
                             if IsControlJustPressed(0, 38) then
-                                if CurrentCops >= Config.MinimumStoreRobberyPolice then
+                              -- Job check
+                              if PlayerData.job.type == "leo" or PlayerData.job.type == "fire" then
+                                QBCore.Functions.Notify(Lang:t("error.job_check"), "error")
+                              else
+                                if currentCops >= Config.MinimumStoreRobberyPolice then
                                     currentSafe = safe
                                     if math.random(1, 100) <= 65 and not IsWearingHandshoes() then
                                         TriggerServerEvent("evidence:server:CreateFingerDrop", pos)
@@ -93,6 +104,7 @@ CreateThread(function()
                                 else
                                     QBCore.Functions.Notify(Lang:t("error.minimum_store_robbery_police", { MinimumStoreRobberyPolice = Config.MinimumStoreRobberyPolice}), "error")
                                 end
+                              end
                             end
                         else
                             DrawText3Ds(Config.Safes[safe][1].xyz, Lang:t("text.safe_opened"))
@@ -108,77 +120,43 @@ CreateThread(function()
     end
 end)
 
-RegisterNetEvent('QBCore:Client:OnPlayerLoaded', function()
-    PlayerJob = QBCore.Functions.GetPlayerData().job
-    onDuty = true
-end)
-
-RegisterNetEvent('QBCore:Client:SetDuty', function(duty)
-    onDuty = duty
-end)
-
-RegisterNetEvent('QBCore:Client:OnJobUpdate', function(JobInfo)
-    PlayerJob = JobInfo
-    onDuty = true
-end)
-
 RegisterNetEvent('police:SetCopCount', function(amount)
-    CurrentCops = amount
+    currentCops = amount
 end)
 
 RegisterNetEvent('lockpicks:UseLockpick', function(isAdvanced)
+  -- Job check
+  if PlayerData.job.type == "leo" or PlayerData.job.type == "fire" then
+    QBCore.Functions.Notify(Lang:t("error.job_check"), "error")
+  else
     usingAdvanced = isAdvanced
     for k in pairs(Config.Registers) do
-        local ped = PlayerPedId()
-        local pos = GetEntityCoords(ped)
-        local dist = #(pos - Config.Registers[k][1].xyz)
-        if dist <= 1 and not Config.Registers[k].robbed then
-            if CurrentCops >= Config.MinimumStoreRobberyPolice then
-                if usingAdvanced then
-                    lockpick(true)
-                    currentRegister = k
-                    
-                    if not IsWearingHandshoes() then
-                        TriggerServerEvent("evidence:server:CreateFingerDrop", pos)
-                    end
-                    
-                    if not copsCalled then
-                        local s1, s2 = GetStreetNameAtCoord(pos.x, pos.y, pos.z)
-                        local street1 = GetStreetNameFromHashKey(s1)
-                        local street2 = GetStreetNameFromHashKey(s2)
-                        local streetLabel = street1
-                        if street2 ~= nil then
-                            streetLabel = streetLabel .. " " .. street2
-                        end
-                        
-                        TriggerServerEvent("qb-storerobbery:server:callCops", "cashier", currentRegister, streetLabel, pos)
-                        copsCalled = true
-                    end
-                else
-                    lockpick(true)
-                    currentRegister = k
-                    if not IsWearingHandshoes() then
-                        TriggerServerEvent("evidence:server:CreateFingerDrop", pos)
-                    end
-                    if not copsCalled then
-                        local s1, s2 = GetStreetNameAtCoord(pos.x, pos.y, pos.z)
-                        local street1 = GetStreetNameFromHashKey(s1)
-                        local street2 = GetStreetNameFromHashKey(s2)
-                        local streetLabel = street1
-                        if street2 ~= nil then
-                            streetLabel = streetLabel .. " " .. street2
-                        end
-                        TriggerServerEvent("qb-storerobbery:server:callCops", "cashier", currentRegister, streetLabel, pos)
-                        copsCalled = true
-                    end
-
-                end
-
-            else
-                QBCore.Functions.Notify(Lang:t("error.minimum_store_robbery_police", { MinimumStoreRobberyPolice = Config.MinimumStoreRobberyPolice}), "error")
+      local ped = PlayerPedId()
+      local pos = GetEntityCoords(ped)
+      local dist = #(pos - Config.Registers[k][1].xyz)
+      if dist <= 1 and not Config.Registers[k].robbed then
+        if currentCops >= Config.MinimumStoreRobberyPolice then
+          if usingAdvanced then lockpick(true) currentRegister = k else lockpick(true) currentRegister = k end
+          if not IsWearingHandshoes() then
+            TriggerServerEvent("evidence:server:CreateFingerDrop", pos)
+          end
+          if not copsCalled then
+            local s1, s2 = GetStreetNameAtCoord(pos.x, pos.y, pos.z)
+            local street1 = GetStreetNameFromHashKey(s1)
+            local street2 = GetStreetNameFromHashKey(s2)
+            local streetLabel = street1
+            if street2 ~= nil then
+              streetLabel = streetLabel .. " & " .. street2
             end
+            TriggerServerEvent("qb-storerobbery:server:callCops", "cashier", currentRegister, streetLabel, pos)
+            copsCalled = true
+          end
+        else
+          QBCore.Functions.Notify(Lang:t("error.minimum_store_robbery_police", { MinimumStoreRobberyPolice = Config.MinimumStoreRobberyPolice}), "error")
         end
+      end
     end
+  end
 end)
 
 function IsWearingHandshoes()
@@ -360,7 +338,7 @@ end)
 
 RegisterNUICallback('PadLockClose', function(_, cb)
     SetNuiFocus(false, false)
-    copsCalled = false
+    --copsCalled = false
     cb('ok')
 end)
 
@@ -418,7 +396,7 @@ RegisterNUICallback('TryCombination', function(data, cb)
                 currentSafe = 0
             end
         end
-        cb("ok")
+        cb('ok')
     end, currentSafe)
 end)
 
@@ -438,30 +416,48 @@ RegisterNetEvent('qb-storerobbery:client:setSafeStatus', function(safe, bool)
 end)
 
 RegisterNetEvent('qb-storerobbery:client:robberyCall', function(_, _, _, coords)
-    if (PlayerJob.name == "police" or PlayerJob.type == "leo") and onDuty then
-        PlaySound(-1, "Lose_1st", "GTAO_FM_Events_Soundset", 0, 0, 1)
-        TriggerServerEvent('police:client:policeAlert', coords, Lang:t("email.shop_robbery"))
-        --TriggerServerEvent('police:server:policeAlert', Lang:t("email.storerobbery_progress"))
-
-        local transG = 250
-        local blip = AddBlipForCoord(coords.x, coords.y, coords.z)
-        SetBlipSprite(blip, 458)
-        SetBlipColour(blip, 1)
-        SetBlipDisplay(blip, 4)
-        SetBlipAlpha(blip, transG)
-        SetBlipScale(blip, 1.0)
-        BeginTextCommandSetBlipName('STRING')
-        AddTextComponentString(Lang:t("email.shop_robbery"))
-        EndTextCommandSetBlipName(blip)
-        while transG ~= 0 do
-            Wait(180 * 4)
-            transG = transG - 1
-            SetBlipAlpha(blip, transG)
-            if transG == 0 then
-                SetBlipSprite(blip, 2)
-                RemoveBlip(blip)
-                return
-            end
-        end
+  if PlayerData.job.type == "leo" then
+    local s1, s2 = GetStreetNameAtCoord(coords.x, coords.y, coords.z)
+    local street1 = GetStreetNameFromHashKey(s1)
+    local street2 = GetStreetNameFromHashKey(s2)
+    local streetLabel = street1
+    if street2 ~= nil then
+      streetLabel = streetLabel .. " & " .. street2
     end
+    PlaySound(-1, "Lose_1st", "GTAO_FM_Events_Soundset", 0, 0, 1)
+    TriggerServerEvent('police:client:policeAlert', coords, Lang:t("notification.store_robbery"))
+    QBCore.Functions.Notify({text = Lang:t("notification.store_robbery"), caption = streetLabel}, 'police', 8000)
+    --TriggerServerEvent('police:server:policeAlert', Lang:t("notification.storerobbery_progress"))
+
+    local transG = 250
+    local blip = AddBlipForCoord(coords.x, coords.y, coords.z)
+    local blip2 = AddBlipForCoord(coords.x, coords.y, coords.z)
+    local blipText = Lang:t('notification.store_robbery', {value = text})
+    SetBlipSprite(blip, 60)
+    SetBlipSprite(blip2, 161)
+    SetBlipColour(blip, 1)
+    SetBlipColour(blip2, 1)
+    SetBlipDisplay(blip, 4)
+    SetBlipDisplay(blip2, 8)
+    SetBlipAlpha(blip, transG)
+    SetBlipAlpha(blip2, transG)
+    SetBlipScale(blip, 0.8)
+    SetBlipScale(blip2, 2.0)
+    SetBlipAsShortRange(blip, false)
+    SetBlipAsShortRange(blip2, false)
+    PulseBlip(blip2)
+    BeginTextCommandSetBlipName('STRING')
+    AddTextComponentString(Lang:t("notification.store_robbery"))
+    EndTextCommandSetBlipName(blip)
+    while transG ~= 0 do
+      Wait(180 * 4)
+      transG = transG - 1
+      SetBlipAlpha(blip, transG)
+      SetBlipAlpha(blip2, transG)
+      if transG == 0 then
+        RemoveBlip(blip)
+        return
+      end
+    end
+  end
 end)

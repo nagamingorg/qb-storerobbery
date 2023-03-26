@@ -1,6 +1,7 @@
 local Translations = {
     error = {
         minimum_store_robbery_police = "Not Enough Police (%{MinimumStoreRobberyPolice} Required)",
+        job_check = 'You can\'t do that as law enforcement or fire/ems!',
         not_driver = "You Are Not The Driver",
         demolish_vehicle = "You Are Not Allowed To Demolish Vehicles Now",
         process_canceled = "Process canceled..",
@@ -14,10 +15,10 @@ local Translations = {
         stolen_amount = "You took $%{value} from the register!",
         safe_code = "Safe Code: "
     },
-    email = {
-        shop_robbery = "10-31 | Shop Robbery",
-        someone_is_trying_to_rob_a_store = "Someone Is Trying To Rob A Store At %{street}",
-        storerobbery_progress = "Storerobbery in progress"
+    notification = {
+        shop_robbery = "Store robbery",
+        someone_is_trying_to_rob_a_store = "Someone is attempting to rob a store at %{street}!",
+        storerobbery_progress = "Robbery in progress"
     },
 }
 

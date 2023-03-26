@@ -7,7 +7,7 @@ CreateThread(function()
     while true do
         SafeCodes = {
             [1] = math.random(1000, 9999),
-            [2] = {math.random(1, 149), math.random(500.0, 600.0), math.random(360.0, 400), math.random(600.0, 900.0)},
+            [2] = {math.random(1, 149), math.random(500.0, 600.0), math.random(360.0, 400), math.random(600.0, 900.0), math.random(100.0, 400.0)},
             [3] = math.random(1000, 9999),
             [4] = math.random(1000, 9999),
             [5] = math.random(1000, 9999),
@@ -19,8 +19,8 @@ CreateThread(function()
             [11] = math.random(1000, 9999),
             [12] = math.random(1000, 9999),
             [13] = math.random(1000, 9999),
-            [14] = {math.random(150, 450), math.random(-360.0, 0.0), math.random(360, 720)},
-            [15] = {math.random(150, 450), math.random(1.0, 100.0), math.random(360, 450), math.random(300.0, 340.0), math.random(350, 400), math.random(320.0, 340.0), math.random(350, 600)},
+            [14] = {math.random(1, 149), math.random(500.0, 600.0), math.random(360.0, 400), math.random(600.0, 900.0), math.random(100.0, 400.0)},
+            [15] = {math.random(1, 149), math.random(500.0, 600.0), math.random(360.0, 400), math.random(600.0, 900.0), math.random(100.0, 400.0)},
         }
         Wait((1000 * 60) * 40)
     end
@@ -46,18 +46,19 @@ RegisterNetEvent('qb-storerobbery:server:takeMoney', function(register, isDone)
         }
         payment = math.random(3) * (math.random(cashA, cashB))
 
-        Player.Functions.AddMoney('bank', payment)
+        Player.Functions.AddMoney('cash', payment)
         TriggerClientEvent('QBCore:Notify', Player.PlayerData.source, Lang:t('text.stolen_amount', {value = payment}))
-        --Player.Functions.AddItem('markedbills', bags, false, info)
-        --TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items['markedbills'], "add")
-        
+
+        --print(tostring(Config.Registers[register].safeKey))
+
         --if math.random(1, 100) <= 10 then
           if Config.Registers[register].safeKey ~= nil then
             local code = SafeCodes[Config.Registers[register].safeKey]
             if Config.Safes[Config.Registers[register].safeKey].type == "keypad" then
                 info = {
-                    label = Lang:t("text.safe_code")..tostring(code)
+                  label = Lang:t("text.safe_code")..tostring(code)
                 }
+                --print(tostring(Config.Registers[register].safeKey).." < assigned safe | code > "..tostring(code))
             else
                 info = {
                     label = Lang:t("text.safe_code")..tostring(math.floor((code[1] % 360) / 3.60)).."-"..tostring(math.floor((code[2] % 360) / 3.60)).."-"..tostring(math.floor((code[3] % 360) / 3.60)).."-"..tostring(math.floor((code[4] % 360) / 3.60)).."-"..tostring(math.floor((code[5] % 360) / 3.60))
@@ -99,7 +100,7 @@ RegisterNetEvent('qb-storerobbery:server:SafeReward', function(safe)
 
 	payment = math.random(3) * (math.random(cashA, cashB))
 
-  Player.Functions.AddMoney('bank', payment)
+  Player.Functions.AddMoney('cash', payment)
   TriggerClientEvent('QBCore:Notify', Player.PlayerData.source, Lang:t('text.stolen_amount', {value = payment}))
 	--Player.Functions.AddItem('markedbills', bags, false, info)
 	--TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items['markedbills'], "add")
@@ -119,9 +120,9 @@ end)
 
 RegisterNetEvent('qb-storerobbery:server:callCops', function(type, safe, streetLabel, coords)
     local alertData = {
-        title = "10-33 | Store Robbery",
+        title = "Store robbery",
         coords = {x = coords.x, y = coords.y, z = coords.z},
-        description = Lang:t("email.someone_is_trying_to_rob_a_store",{street = streetLabel})
+        description = Lang:t("notification.someone_is_trying_to_rob_a_store",{street = streetLabel})
     }
     TriggerClientEvent("qb-storerobbery:client:robberyCall", -1, type, safe, streetLabel, coords)
     TriggerClientEvent("qb-phone:client:addPoliceAlert", -1, alertData)
