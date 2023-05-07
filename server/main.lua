@@ -51,7 +51,7 @@ RegisterNetEvent('qb-storerobbery:server:takeMoney', function(register, isDone)
 
         --print(tostring(Config.Registers[register].safeKey))
 
-        --if math.random(1, 100) <= 10 then
+        if math.random(1, 100) <= 10 then
           if Config.Registers[register].safeKey ~= nil then
             local code = SafeCodes[Config.Registers[register].safeKey]
             if Config.Safes[Config.Registers[register].safeKey].type == "keypad" then
