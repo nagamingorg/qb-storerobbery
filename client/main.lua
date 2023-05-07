@@ -91,14 +91,7 @@ CreateThread(function()
 
                                     if not copsCalled then
                                         pos = GetEntityCoords(PlayerPedId())
-                                        local s1, s2 = GetStreetNameAtCoord(pos.x, pos.y, pos.z)
-                                        local street1 = GetStreetNameFromHashKey(s1)
-                                        local street2 = GetStreetNameFromHashKey(s2)
-                                        local streetLabel = street1
-                                        if street2 ~= nil then
-                                            streetLabel = streetLabel .. " " .. street2
-                                        end
-                                        TriggerServerEvent("qb-storerobbery:server:callCops", "safe", currentSafe, streetLabel, pos)
+                                        TriggerServerEvent("qb-storerobbery:server:callCops", pos)
                                         copsCalled = true
                                     end
                                 else
@@ -141,14 +134,7 @@ RegisterNetEvent('lockpicks:UseLockpick', function(isAdvanced)
             TriggerServerEvent("evidence:server:CreateFingerDrop", pos)
           end
           if not copsCalled then
-            local s1, s2 = GetStreetNameAtCoord(pos.x, pos.y, pos.z)
-            local street1 = GetStreetNameFromHashKey(s1)
-            local street2 = GetStreetNameFromHashKey(s2)
-            local streetLabel = street1
-            if street2 ~= nil then
-              streetLabel = streetLabel .. " & " .. street2
-            end
-            TriggerServerEvent("qb-storerobbery:server:callCops", "cashier", currentRegister, streetLabel, pos)
+            TriggerServerEvent("qb-storerobbery:server:callCops", pos)
             copsCalled = true
           end
         else
@@ -415,24 +401,17 @@ RegisterNetEvent('qb-storerobbery:client:setSafeStatus', function(safe, bool)
     Config.Safes[safe].robbed = bool
 end)
 
-RegisterNetEvent('qb-storerobbery:client:robberyCall', function(_, _, _, coords)
+RegisterNetEvent('qb-storerobbery:client:robberyCall', function(coords)
   if PlayerData.job.type == "leo" then
-    local s1, s2 = GetStreetNameAtCoord(coords.x, coords.y, coords.z)
-    local street1 = GetStreetNameFromHashKey(s1)
-    local street2 = GetStreetNameFromHashKey(s2)
-    local streetLabel = street1
-    if street2 ~= nil then
-      streetLabel = streetLabel .. " & " .. street2
-    end
-    PlaySound(-1, "Lose_1st", "GTAO_FM_Events_Soundset", 0, 0, 1)
-    TriggerServerEvent('police:client:policeAlert', coords, Lang:t("notification.store_robbery"))
-    QBCore.Functions.Notify({text = Lang:t("notification.store_robbery"), caption = streetLabel}, 'police', 8000)
-    --TriggerServerEvent('police:server:policeAlert', Lang:t("notification.storerobbery_progress"))
+    local address = exports['sq5-hud']:GetPostalAddress(coords, 1)
+    PlaySound(-1, "CHECKPOINT_MISSED", "HUD_MINI_GAME_SOUNDSET", 0, 0, 1)
+    TriggerServerEvent('police:client:policeAlert', coords, Lang:t("notification.storerobbery_progress"))
+    QBCore.Functions.Notify(Lang:t("notification.someone_is_trying_to_rob_a_store", {street = address}), 'police', 8000)
 
     local transG = 250
     local blip = AddBlipForCoord(coords.x, coords.y, coords.z)
     local blip2 = AddBlipForCoord(coords.x, coords.y, coords.z)
-    local blipText = Lang:t('notification.store_robbery', {value = text})
+    local blipText = Lang:t('notification.store_robbery')
     SetBlipSprite(blip, 60)
     SetBlipSprite(blip2, 161)
     SetBlipColour(blip, 1)
@@ -447,7 +426,7 @@ RegisterNetEvent('qb-storerobbery:client:robberyCall', function(_, _, _, coords)
     SetBlipAsShortRange(blip2, false)
     PulseBlip(blip2)
     BeginTextCommandSetBlipName('STRING')
-    AddTextComponentString(Lang:t("notification.store_robbery"))
+    AddTextComponentString(Lang:t('notification.store_robbery'))
     EndTextCommandSetBlipName(blip)
     while transG ~= 0 do
       Wait(180 * 4)

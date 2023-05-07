@@ -49,8 +49,6 @@ RegisterNetEvent('qb-storerobbery:server:takeMoney', function(register, isDone)
         Player.Functions.AddMoney('cash', payment)
         TriggerClientEvent('QBCore:Notify', Player.PlayerData.source, Lang:t('text.stolen_amount', {value = payment}))
 
-        --print(tostring(Config.Registers[register].safeKey))
-
         if math.random(1, 100) <= 10 then
           if Config.Registers[register].safeKey ~= nil then
             local code = SafeCodes[Config.Registers[register].safeKey]
@@ -58,7 +56,6 @@ RegisterNetEvent('qb-storerobbery:server:takeMoney', function(register, isDone)
                 info = {
                   label = Lang:t("text.safe_code")..tostring(code)
                 }
-                --print(tostring(Config.Registers[register].safeKey).." < assigned safe | code > "..tostring(code))
             else
                 info = {
                     label = Lang:t("text.safe_code")..tostring(math.floor((code[1] % 360) / 3.60)).."-"..tostring(math.floor((code[2] % 360) / 3.60)).."-"..tostring(math.floor((code[3] % 360) / 3.60)).."-"..tostring(math.floor((code[4] % 360) / 3.60)).."-"..tostring(math.floor((code[5] % 360) / 3.60))
@@ -67,7 +64,7 @@ RegisterNetEvent('qb-storerobbery:server:takeMoney', function(register, isDone)
             Player.Functions.AddItem("stickynote", 1, false, info)
             TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items["stickynote"], "add")
           end
-        --end
+        end
     end
 end)
 
@@ -118,14 +115,9 @@ RegisterNetEvent('qb-storerobbery:server:SafeReward', function(safe)
     end
 end)
 
-RegisterNetEvent('qb-storerobbery:server:callCops', function(type, safe, streetLabel, coords)
-    local alertData = {
-        title = "Store robbery",
-        coords = {x = coords.x, y = coords.y, z = coords.z},
-        description = Lang:t("notification.someone_is_trying_to_rob_a_store",{street = streetLabel})
-    }
-    TriggerClientEvent("qb-storerobbery:client:robberyCall", -1, type, safe, streetLabel, coords)
-    TriggerClientEvent("qb-phone:client:addPoliceAlert", -1, alertData)
+RegisterNetEvent('qb-storerobbery:server:callCops', function(coords)
+  local src = source
+  TriggerClientEvent("qb-storerobbery:client:robberyCall", src, coords)
 end)
 
 RegisterNetEvent('qb-storerobbery:server:removeAdvancedLockpick', function()

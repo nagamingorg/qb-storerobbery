@@ -16,7 +16,7 @@ local Translations = {
         safe_code = "Safe Code: "
     },
     notification = {
-        shop_robbery = "Store robbery",
+        store_robbery = "Store robbery",
         someone_is_trying_to_rob_a_store = "Someone is attempting to rob a store at %{street}!",
         storerobbery_progress = "Robbery in progress"
     },
