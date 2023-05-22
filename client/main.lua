@@ -7,7 +7,6 @@ local currentRegister = 0
 local currentSafe = 0
 local copsCalled = false
 local currentCops = 0
-local PlayerJob = {}
 local usingAdvanced = false
 
 RegisterNetEvent('QBCore:Client:OnPlayerLoaded', function()
@@ -418,7 +417,6 @@ RegisterNetEvent('qb-storerobbery:client:robberyCall', function(coords)
     local transG = 250
     local blip = AddBlipForCoord(coords.x, coords.y, coords.z)
     local blip2 = AddBlipForCoord(coords.x, coords.y, coords.z)
-    local blipText = Lang:t('notification.store_robbery')
     SetBlipSprite(blip, 60)
     SetBlipSprite(blip2, 161)
     SetBlipColour(blip, 1)
