@@ -3,6 +3,7 @@ local SafeCodes = {}
 local cashA = 60 				--<<how much minimum you can get from a robbery
 local cashB = 755				--<< how much maximum you can get from a robbery
 local payment = 0
+local info = {}
 
 CreateThread(function()
     while true do
@@ -42,9 +43,6 @@ RegisterNetEvent('qb-storerobbery:server:takeMoney', function(register, isDone)
 
     if isDone then
         -- local bags = math.random(1,3)
-        local info = {
-            worth = math.random(cashA, cashB)
-        }
         payment = math.random(3) * (math.random(cashA, cashB))
 
         Player.Functions.AddMoney('cash', payment)
