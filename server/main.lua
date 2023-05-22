@@ -2,6 +2,7 @@ local QBCore = exports['qb-core']:GetCoreObject()
 local SafeCodes = {}
 local cashA = 60 				--<<how much minimum you can get from a robbery
 local cashB = 755				--<< how much maximum you can get from a robbery
+local payment = 0
 
 CreateThread(function()
     while true do
@@ -40,7 +41,7 @@ RegisterNetEvent('qb-storerobbery:server:takeMoney', function(register, isDone)
     -- Add any additional code you want above this comment to do whilst robbing a register, everything above the if statement under this will be triggered every 2 seconds when a register is getting robbed.
 
     if isDone then
-        local bags = math.random(1,3)
+        -- local bags = math.random(1,3)
         local info = {
             worth = math.random(cashA, cashB)
         }
@@ -99,8 +100,8 @@ RegisterNetEvent('qb-storerobbery:server:SafeReward', function(safe)
 
   Player.Functions.AddMoney('cash', payment)
   TriggerClientEvent('QBCore:Notify', Player.PlayerData.source, Lang:t('text.stolen_amount', {value = payment}))
-	--Player.Functions.AddItem('markedbills', bags, false, info)
-	--TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items['markedbills'], "add")
+	-- Player.Functions.AddItem('markedbills', bags, false, info)
+	-- TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items['markedbills'], "add")
 
     local luck = math.random(1, 100)
     local odd = math.random(1, 100)

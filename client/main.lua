@@ -101,7 +101,7 @@ CreateThread(function()
                                 else
                                     QBCore.Functions.Notify(Lang:t("error.minimum_store_robbery_police", { MinimumStoreRobberyPolice = Config.MinimumStoreRobberyPolice}), "error")
                                 end
-                              Send
+                              end
                             end
                         else
                             DrawText3Ds(Config.Safes[safe][1].xyz, Lang:t("text.safe_opened"))
