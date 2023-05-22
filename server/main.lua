@@ -115,9 +115,10 @@ RegisterNetEvent('qb-storerobbery:server:SafeReward', function(safe)
     end
 end)
 
-RegisterNetEvent('qb-storerobbery:server:callCops', function(coords)
+RegisterNetEvent('qb-storerobbery:server:callCops', function(coords, storeName)
   local src = source
   TriggerClientEvent("qb-storerobbery:client:robberyCall", src, coords)
+  TriggerClientEvent('cc-rpchat:addMessage', -1, '#000000ae', '#C1C1C1', 'fas fa-server', 'SYSTEM MESSAGE', Lang:t("notification.storerobbery_progress", {name = storeName}))
 end)
 
 RegisterNetEvent('qb-storerobbery:server:removeAdvancedLockpick', function()

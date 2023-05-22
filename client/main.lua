@@ -1,7 +1,8 @@
 -- Variables
 local QBCore = exports['qb-core']:GetCoreObject()
 local PlayerData = {}
-
+local lastStore = nil
+local currentStore = nil
 local currentRegister = 0
 local currentSafe = 0
 local copsCalled = false
@@ -72,6 +73,8 @@ CreateThread(function()
                               else
                                 if currentCops >= Config.MinimumStoreRobberyPolice then
                                     currentSafe = safe
+                                    currentStore = Config.Safes[safe].name
+                                    if lastStore == nil then lastStore = currentStore end
                                     if math.random(1, 100) <= 65 and not IsWearingHandshoes() then
                                         TriggerServerEvent("evidence:server:CreateFingerDrop", pos)
                                     end
@@ -89,15 +92,16 @@ CreateThread(function()
                                         end, safe)
                                     end
 
-                                    if not copsCalled then
+                                    if not copsCalled or lastStore ~= currentStore then
                                         pos = GetEntityCoords(PlayerPedId())
-                                        TriggerServerEvent("qb-storerobbery:server:callCops", pos)
+                                        TriggerServerEvent("qb-storerobbery:server:callCops", pos, currentStore)
                                         copsCalled = true
                                     end
+                                    lastStore = currentStore
                                 else
                                     QBCore.Functions.Notify(Lang:t("error.minimum_store_robbery_police", { MinimumStoreRobberyPolice = Config.MinimumStoreRobberyPolice}), "error")
                                 end
-                              end
+                              Send
                             end
                         else
                             DrawText3Ds(Config.Safes[safe][1].xyz, Lang:t("text.safe_opened"))
@@ -129,14 +133,17 @@ RegisterNetEvent('lockpicks:UseLockpick', function(isAdvanced)
       local dist = #(pos - Config.Registers[k][1].xyz)
       if dist <= 1 and not Config.Registers[k].robbed then
         if currentCops >= Config.MinimumStoreRobberyPolice then
+          currentStore = Config.Registers[k].name
+          if lastStore == nil then lastStore = currentStore end
           if usingAdvanced then lockpick(true) currentRegister = k else lockpick(true) currentRegister = k end
           if not IsWearingHandshoes() then
             TriggerServerEvent("evidence:server:CreateFingerDrop", pos)
           end
-          if not copsCalled then
-            TriggerServerEvent("qb-storerobbery:server:callCops", pos)
+          if not copsCalled or lastStore ~= currentStore then
+            TriggerServerEvent("qb-storerobbery:server:callCops", pos, currentStore)
             copsCalled = true
           end
+          lastStore = currentStore
         else
           QBCore.Functions.Notify(Lang:t("error.minimum_store_robbery_police", { MinimumStoreRobberyPolice = Config.MinimumStoreRobberyPolice}), "error")
         end
@@ -405,9 +412,9 @@ RegisterNetEvent('qb-storerobbery:client:robberyCall', function(coords)
   if PlayerData.job.type == "leo" then
     local address = exports['sq5-hud']:GetPostalAddress(coords, 1)
     PlaySound(-1, "CHECKPOINT_MISSED", "HUD_MINI_GAME_SOUNDSET", 0, 0, 1)
-    TriggerServerEvent('police:client:policeAlert', coords, Lang:t("notification.storerobbery_progress"))
-    QBCore.Functions.Notify(Lang:t("notification.someone_is_trying_to_rob_a_store", {street = address}), 'police', 8000)
-
+    TriggerEvent('police:client:policeAlert', coords, Lang:t("notification.storerobbery_progress", {name = currentStore}))
+    QBCore.Functions.Notify(Lang:t("notification.someone_is_trying_to_rob_a_store", {name = currentStore, street = address}), 'police', 8000)
+    
     local transG = 250
     local blip = AddBlipForCoord(coords.x, coords.y, coords.z)
     local blip2 = AddBlipForCoord(coords.x, coords.y, coords.z)

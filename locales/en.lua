@@ -17,8 +17,8 @@ local Translations = {
     },
     notification = {
         store_robbery = "Store robbery",
-        someone_is_trying_to_rob_a_store = "Someone is attempting to rob a store at %{street}!",
-        storerobbery_progress = "Robbery in progress"
+        someone_is_trying_to_rob_a_store = "Someone is attempting to rob %{name} at %{street}!",
+        storerobbery_progress = "Someone is attempting to rob %{name}"
     },
 }
 
