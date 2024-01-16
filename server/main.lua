@@ -1,7 +1,7 @@
 local QBCore = exports['qb-core']:GetCoreObject()
 local SafeCodes = {}
-local cashA = 60 				--<<how much minimum you can get from a robbery
-local cashB = 755				--<< how much maximum you can get from a robbery
+local cashA = 160 				--<<how much minimum you can get from a robbery
+local cashB = 900				--<< how much maximum you can get from a robbery
 local payment = 0
 local info = {}
 
@@ -36,7 +36,7 @@ RegisterNetEvent('qb-storerobbery:server:takeMoney', function(register, isDone)
     local playerPed = GetPlayerPed(src)
     local playerCoords = GetEntityCoords(playerPed)
     if #(playerCoords - Config.Registers[register][1].xyz) > 3.0 or (not Config.Registers[register].robbed and not isDone) or (Config.Registers[register].time <= 0 and not isDone) then
-        return DropPlayer(src, "Attempted exploit abuse")
+        return DropPlayer(src, 'Attempted exploit abuse')
     end
 
     -- Add any additional code you want above this comment to do whilst robbing a register, everything above the if statement under this will be triggered every 2 seconds when a register is getting robbed.
@@ -51,18 +51,21 @@ RegisterNetEvent('qb-storerobbery:server:takeMoney', function(register, isDone)
         if math.random(1, 100) <= 10 then
           if Config.Registers[register].safeKey ~= nil then
             local code = SafeCodes[Config.Registers[register].safeKey]
-            if Config.Safes[Config.Registers[register].safeKey].type == "keypad" then
+            if Config.Safes[Config.Registers[register].safeKey].type == 'keypad' then
                 info = {
-                  label = Lang:t("text.safe_code")..tostring(code)
+                    label = Lang:t('text.safe_code') .. tostring(code)
                 }
             else
-                info = {
-                    label = Lang:t("text.safe_code")..tostring(math.floor((code[1] % 360) / 3.60)).."-"..tostring(math.floor((code[2] % 360) / 3.60)).."-"..tostring(math.floor((code[3] % 360) / 3.60)).."-"..tostring(math.floor((code[4] % 360) / 3.60)).."-"..tostring(math.floor((code[5] % 360) / 3.60))
-                }
+                local label = Lang:t('text.safe_code') .. ' '
+
+                for i = 1, #code do
+                    label = label .. tostring(math.floor((code[i] % 360) / 3.60)) .. ' - '
+                end
+
+                info = {label = label:sub(1, -3)}
             end
-            Player.Functions.AddItem("stickynote", 1, false, info)
-            TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items["stickynote"], "add")
-          end
+            Player.Functions.AddItem('stickynote', 1, false, info)
+            TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items['stickynote'], 'add')
         end
     end
 end)
@@ -85,54 +88,48 @@ end)
 
 RegisterNetEvent('qb-storerobbery:server:SafeReward', function(safe)
     local src = source
-	local Player = QBCore.Functions.GetPlayer(src)
+    local Player = QBCore.Functions.GetPlayer(src)
     if not Player then return end
 
     local playerPed = GetPlayerPed(src)
     local playerCoords = GetEntityCoords(playerPed)
     if #(playerCoords - Config.Safes[safe][1].xyz) > 3.0 or Config.Safes[safe].robbed then
-        return DropPlayer(src, "Attempted exploit abuse")
+        return DropPlayer(src, 'Attempted exploit abuse')
     end
 
 	payment = math.random(3) * (math.random(cashA, cashB))
 
-  Player.Functions.AddMoney('cash', payment)
-  TriggerClientEvent('QBCore:Notify', Player.PlayerData.source, Lang:t('text.stolen_amount', {value = payment}))
-	-- Player.Functions.AddItem('markedbills', bags, false, info)
-	-- TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items['markedbills'], "add")
+    Player.Functions.AddMoney('cash', payment)
+    TriggerClientEvent('QBCore:Notify', Player.PlayerData.source, Lang:t('text.stolen_amount', {value = payment}))
 
     local luck = math.random(1, 100)
     local odd = math.random(1, 100)
     if luck <= 10 then
-        Player.Functions.AddItem("rolex", math.random(3, 7))
-        TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items["rolex"], "add")
+        Player.Functions.AddItem('rolex', math.random(3, 7))
+        TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items['rolex'], 'add')
         if luck == odd then
             Wait(500)
-            Player.Functions.AddItem("goldbar", 1)
-            TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items["goldbar"], "add")
+            Player.Functions.AddItem('goldbar', 1)
+            TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items['goldbar'], 'add')
         end
     end
 end)
 
 RegisterNetEvent('qb-storerobbery:server:callCops', function(coords, storeName)
-  local src = source
-  TriggerClientEvent("qb-storerobbery:client:robberyCall", src, coords)
-  TriggerClientEvent('cc-rpchat:addMessage', -1, '#000000ae', '#C1C1C1', 'fas fa-server', 'SYSTEM MESSAGE', Lang:t("notification.storerobbery_progress", {name = storeName}))
+    local src = source
+    TriggerClientEvent("qb-storerobbery:client:robberyCall", src, coords)
+    TriggerClientEvent('cc-rpchat:addMessage', -1, '#000000ae', '#C1C1C1', 'fas fa-server', 'SYSTEM MESSAGE', Lang:t("notification.storerobbery_progress", { name = storeName }))
 end)
 
 RegisterNetEvent('qb-storerobbery:server:removeAdvancedLockpick', function()
     local Player = QBCore.Functions.GetPlayer(source)
-
     if not Player then return end
-
     Player.Functions.RemoveItem('advancedlockpick', 1)
 end)
 
 RegisterNetEvent('qb-storerobbery:server:removeLockpick', function()
     local Player = QBCore.Functions.GetPlayer(source)
-
     if not Player then return end
-
     Player.Functions.RemoveItem('lockpick', 1)
 end)
 
@@ -140,14 +137,13 @@ CreateThread(function()
     while true do
         local toSend = {}
         for k in ipairs(Config.Registers) do
-
             if Config.Registers[k].time > 0 and (Config.Registers[k].time - Config.tickInterval) >= 0 then
                 Config.Registers[k].time = Config.Registers[k].time - Config.tickInterval
             else
                 if Config.Registers[k].robbed then
                     Config.Registers[k].time = 0
                     Config.Registers[k].robbed = false
-                    toSend[#toSend+1] = Config.Registers[k]
+                    toSend[#toSend + 1] = Config.Registers[k]
                 end
             end
         end

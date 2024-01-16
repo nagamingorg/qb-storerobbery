@@ -1,17 +1,15 @@
 local Translations = {
     error = {
-        minimum_store_robbery_police = "Not Enough Police (%{MinimumStoreRobberyPolice} Required)",
+        minimum_store_robbery_police = "Not enough law enforcement currently on duty; (%{MinimumStoreRobberyPolice} required)",
         job_check = 'You can\'t do that as law enforcement or fire/ems!',
-        not_driver = "You Are Not The Driver",
-        demolish_vehicle = "You Are Not Allowed To Demolish Vehicles Now",
-        process_canceled = "Process canceled..",
-        you_broke_the_lock_pick = "You Broke The Lock Pick",
+        process_canceled = "Process cancelled..",
+        lockpick_broke = "The lockpick broke, try again",
     },
     text = {
-        the_cash_register_is_empty = "The Cash Register Is Empty",
-        try_combination = "~g~E~w~ - Try Combination",
-        safe_opened = "Safe Opened",
-        emptying_the_register= "Emptying The Register..",
+        the_cash_register_is_empty = "The cash register is Eempty",
+        try_combination = "~g~E~w~ - Try combination",
+        safe_opened = "Safe OPENED",
+        emptying_the_register= "Emptying the register..",
         stolen_amount = "You took $%{value} from the register!",
         safe_code = "Safe Code: "
     },
