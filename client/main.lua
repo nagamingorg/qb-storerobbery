@@ -418,5 +418,4 @@ RegisterNetEvent('qb-storerobbery:client:robberyCall', function(_, _, _, coords)
             end
         end
     end
-  end
 end)

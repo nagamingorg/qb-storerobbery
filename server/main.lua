@@ -48,24 +48,25 @@ RegisterNetEvent('qb-storerobbery:server:takeMoney', function(register, isDone)
         Player.Functions.AddMoney('cash', payment)
         TriggerClientEvent('QBCore:Notify', Player.PlayerData.source, Lang:t('text.stolen_amount', {value = payment}))
 
-        if math.random(1, 100) <= 10 then
-          if Config.Registers[register].safeKey ~= nil then
-            local code = SafeCodes[Config.Registers[register].safeKey]
-            if Config.Safes[Config.Registers[register].safeKey].type == 'keypad' then
-                info = {
-                    label = Lang:t('text.safe_code') .. tostring(code)
-                }
-            else
-                local label = Lang:t('text.safe_code') .. ' '
+        if math.random(1, 100) <= Config.stickyNoteChance then
+            if Config.Registers[register].safeKey ~= nil then
+                local code = SafeCodes[Config.Registers[register].safeKey]
+                if Config.Safes[Config.Registers[register].safeKey].type == 'keypad' then
+                    info = {
+                        label = Lang:t('text.safe_code') .. tostring(code)
+                    }
+                else
+                    local label = Lang:t('text.safe_code') .. ' '
 
-                for i = 1, #code do
-                    label = label .. tostring(math.floor((code[i] % 360) / 3.60)) .. ' - '
+                    for i = 1, #code do
+                        label = label .. tostring(math.floor((code[i] % 360) / 3.60)) .. ' - '
+                    end
+
+                    info = {label = label:sub(1, -3)}
                 end
-
-                info = {label = label:sub(1, -3)}
+                Player.Functions.AddItem('stickynote', 1, false, info)
+                TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items['stickynote'], 'add')
             end
-            Player.Functions.AddItem('stickynote', 1, false, info)
-            TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items['stickynote'], 'add')
         end
     end
 end)
