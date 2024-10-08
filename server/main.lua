@@ -62,10 +62,10 @@ RegisterNetEvent('qb-storerobbery:server:takeMoney', function(register, isDone)
                         label = label .. tostring(math.floor((code[i] % 360) / 3.60)) .. ' - '
                     end
 
-                    info = {label = label:sub(1, -3)}
+                    info = { label = label:sub(1, -3) }
                 end
-                Player.Functions.AddItem('stickynote', 1, false, info)
-                TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items['stickynote'], 'add')
+                exports['qb-inventory']:AddItem(src, 'stickynote', 1, false, info, 'qb-storerobbery:server:takeMoney')
+                TriggerClientEvent('qb-inventory:client:ItemBox', src, QBCore.Shared.Items['stickynote'], 'add')
             end
         end
     end
@@ -106,12 +106,12 @@ RegisterNetEvent('qb-storerobbery:server:SafeReward', function(safe)
     local luck = math.random(1, 100)
     local odd = math.random(1, 100)
     if luck <= 10 then
-        Player.Functions.AddItem('rolex', math.random(3, 7))
-        TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items['rolex'], 'add')
+        exports['qb-inventory']:AddItem(src, 'rolex', math.random(3, 7), false, false, 'qb-storerobbery:server:SafeReward')
+        TriggerClientEvent('qb-inventory:client:ItemBox', src, QBCore.Shared.Items['rolex'], 'add')
         if luck == odd then
             Wait(500)
-            Player.Functions.AddItem('goldbar', 1)
-            TriggerClientEvent('inventory:client:ItemBox', src, QBCore.Shared.Items['goldbar'], 'add')
+            exports['qb-inventory']:AddItem(src, 'goldbar', 1, false, false, 'qb-storerobbery:server:SafeReward')
+            TriggerClientEvent('qb-inventory:client:ItemBox', src, QBCore.Shared.Items['goldbar'], 'add')
         end
     end
 end)
@@ -125,13 +125,13 @@ end)
 RegisterNetEvent('qb-storerobbery:server:removeAdvancedLockpick', function()
     local Player = QBCore.Functions.GetPlayer(source)
     if not Player then return end
-    Player.Functions.RemoveItem('advancedlockpick', 1)
+    exports['qb-inventory']:RemoveItem(source, 'advancedlockpick', 1, false, 'qb-storerobbery:server:removeAdvancedLockpick')
 end)
 
 RegisterNetEvent('qb-storerobbery:server:removeLockpick', function()
     local Player = QBCore.Functions.GetPlayer(source)
     if not Player then return end
-    Player.Functions.RemoveItem('lockpick', 1)
+    exports['qb-inventory']:RemoveItem(source, 'lockpick', 1, false, 'qb-storerobbery:server:removeLockpick')
 end)
 
 CreateThread(function()
